@@ -1,0 +1,9 @@
+build
+node_modules
+logs
+.vercel
+
+*.key
+.env
+
+.vscode

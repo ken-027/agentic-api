@@ -1,0 +1,505 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Portfolio API",
+    "version": "1.0.0",
+    "description": "API Documentation"
+  },
+  "paths": {
+    "/api/v1/chat": {
+      "post": {
+        "summary": "Post message and return as stream",
+        "tags": [
+          "Chat"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message",
+                  "history"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "What service do you offer?"
+                  },
+                  "history": {
+                    "type": "array",
+                    "description": "Array of past messages for context.",
+                    "items": {
+                      "type": "string",
+                      "example": ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return answered from the question",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/email/send": {
+      "post": {
+        "summary": "Send an email using provided details",
+        "tags": [
+          "Email"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "example": "Inquiry about service"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Hello, I would like to know more about your service."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully sent the email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email sent successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request, invalid email format or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid email address."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/experiences": {
+      "get": {
+        "summary": "Get all experiences",
+        "tags": [
+          "Portfolio"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of experiences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "experiences": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "example": "Full Stack Developer"
+                          },
+                          "company": {
+                            "type": "string",
+                            "example": "TechCorp Inc."
+                          },
+                          "location": {
+                            "type": "string",
+                            "example": "Remote"
+                          },
+                          "startDate": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2021-06-01"
+                          },
+                          "endDate": {
+                            "type": "string",
+                            "example": "Present"
+                          },
+                          "descriptions": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "example": [
+                              "Developed core features",
+                              "Managed deployments"
+                            ]
+                          },
+                          "companyLogo": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://example.com/logo.png"
+                          },
+                          "projects": {
+                            "type": "array",
+                            "nullable": true,
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "example": "Project Atlas"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "example": "A web-based inventory tracking system"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/experiences/years-of-experience": {
+      "get": {
+        "summary": "Get total years and months of experience",
+        "tags": [
+          "Portfolio"
+        ],
+        "responses": {
+          "200": {
+            "description": "Total experience in years and months",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "years": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "months": {
+                      "type": "integer",
+                      "example": 5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/services": {
+      "get": {
+        "summary": "Get all services",
+        "tags": [
+          "Portfolio"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of available services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "services": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "example": "Web Development"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Building responsive and modern websites."
+                          },
+                          "image": {
+                            "type": "string",
+                            "example": "https://example.com/images/web-development.png"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/certificates": {
+      "get": {
+        "summary": "Get all certificates",
+        "tags": [
+          "Portfolio"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of certificates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "certificates": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "JavaScript Algorithms and Data Structures"
+                          },
+                          "platform": {
+                            "type": "string",
+                            "example": "freeCodeCamp"
+                          },
+                          "platformLogo": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://example.com/images/freecodecamp-logo.png"
+                          },
+                          "dateCompleted": {
+                            "type": "string",
+                            "example": "ongoing",
+                            "description": "Completion date or \"ongoing\""
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "Learned the fundamentals of JavaScript, algorithms, and data structures."
+                          },
+                          "certificateLink": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://example.com/certificates/javascript"
+                          },
+                          "certificateImage": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://example.com/images/certificate.png"
+                          },
+                          "courseLink": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://example.com/courses/javascript"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/projects": {
+      "get": {
+        "summary": "Get all projects with details",
+        "tags": [
+          "Portfolio"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "projects": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "thumbnailLink": {
+                            "type": "string",
+                            "format": "uri",
+                            "example": "https://cdn.example.com/thumb.png"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "AI Chatbot"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "A smart AI chatbot built with OpenAI."
+                          },
+                          "technologies": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "example": "React"
+                                },
+                                "proficiency": {
+                                  "type": "integer",
+                                  "example": 8,
+                                  "minimum": 1,
+                                  "maximum": 10
+                                },
+                                "icon": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "example": "https://cdn.example.com/icons/react.svg"
+                                }
+                              }
+                            }
+                          },
+                          "githubRepo": {
+                            "type": "string",
+                            "format": "uri",
+                            "example": "https://github.com/user/project"
+                          },
+                          "liveDemo": {
+                            "type": "string",
+                            "format": "uri",
+                            "example": "https://project.example.com"
+                          },
+                          "screenshot": {
+                            "type": "string",
+                            "format": "uri",
+                            "example": "https://cdn.example.com/screenshots/project.png"
+                          },
+                          "category": {
+                            "type": "string",
+                            "enum": [
+                              "fullstack",
+                              "frontend",
+                              "backend",
+                              "AI-powered"
+                            ],
+                            "example": "AI-powered"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/portfolio/skills": {
+      "get": {
+        "summary": "Get all skills with proficiency and icons",
+        "tags": [
+          "Portfolio"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of categorized skills",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "skills": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "Frontend"
+                          },
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "example": "React"
+                                },
+                                "proficiency": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 10,
+                                  "example": 8
+                                },
+                                "icon": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "example": "https://cdn.example.com/icons/react.svg"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}

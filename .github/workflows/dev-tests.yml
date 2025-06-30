@@ -1,0 +1,43 @@
+name: Dev Tests
+
+on:
+  pull_request
+jobs:
+  TESTING_ENDPOINTS:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 🧱 Install dependencies
+        run: npm install
+
+      - name: 🧪 Run dev
+        run: npm run dev
+
+      - name: 🧪 Run dev tests
+        run: npm run test:e2e
+        env:
+          NODE_ENV: development
+          PORT: 5000
+          TIMEZONE: Asia/Manila
+          DB_URL: ${{ secrets.DB_URL }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+          EMBEDDING_MODEL: ${{ secrets.EMBEDDING_MODEL }}
+          EJS_SERVICE_ID: ${{ secrets.EJS_SERVICE_ID }}
+          EJS_TEMPLATE_ID: ${{ secrets.EJS_TEMPLATE_ID }}
+          EJS_PUBLIC_KEY: ${{ secrets.EJS_PUBLIC_KEY }}
+          EJS_PRIVATE_KEY: ${{ secrets.EJS_PRIVATE_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
