@@ -18,4 +18,15 @@ describe("agentic api endpoints", () => {
             "name",
         ]);
     });
+
+    it("return 400 for missing message on chat", async () => {
+        await request(app).post("/api/v1/agents/portfolio").expect(400);
+    });
+
+    it("chat portfolio agent", async () => {
+        await request(app)
+            .post("/api/v1/agents/portfolio")
+            .send({ message: "Hi there!" })
+            .expect(200);
+    });
 });

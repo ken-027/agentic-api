@@ -85,6 +85,33 @@ export async function agent(
     response.end();
 }
 
+/**
+ * @swagger
+ * /api/v1/agents:
+ *   get:
+ *     summary: Get list of agents
+ *     tags: [Chat]
+ *     responses:
+ *       200:
+ *         description: return list of agents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 agents:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: portfolio
+ *                       description:
+ *                         type: string
+ *                         example: Handles portfolio inquires
+ *
+ */
 export function agents(_req: Request, response: Response) {
     return response.json({
         agents: Object.keys(AgentsConfig).map((name) => ({
