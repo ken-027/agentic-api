@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import NotFound from "@/middlewares/not-found.middleware";
 import cors from "cors";
-import { ALLOWED_ORIGINS, PRODUCTION } from "@/config/env";
+import { ALLOWED_ORIGINS, NODE_ENV, PRODUCTION } from "@/config/env";
 // import helmet from "helmet";
 // import morgan from "morgan";
 // import logger from "@/middlewares/logger.middleware";
@@ -23,6 +23,7 @@ import swaggerSpec from "./swagger";
 
 import logger from "./middlewares/logger.middleware";
 import morgan from "morgan";
+import { JWT_SECRET } from "./config";
 const prefixRoute = "/api/v1";
 
 export const app = express();
@@ -38,7 +39,7 @@ app.use(
             createTableIfMissing: true,
             pruneSessionInterval: 60 * 60, // 1 hour
         }),
-        secret: "asdg",
+        secret: JWT_SECRET,
         resave: false,
         saveUninitialized: true,
         cookie: { secure: PRODUCTION, maxAge: 60 * 60 * 1000 * 24 }, // 24 hours
@@ -46,12 +47,15 @@ app.use(
 );
 // app.use(helmet());
 app.use(express.static(path.join(__dirname, "../public")));
-app.use(
-    // morgan(NODE_ENV === "production" ? "combined" : "dev", {
-    morgan("dev", {
-        stream: logger(),
-    }),
-);
+
+if (NODE_ENV !== "production") {
+    app.use(
+        // morgan(NODE_ENV === "production" ? "combined" : "dev", {
+        morgan("dev", {
+            stream: logger(),
+        }),
+    );
+}
 
 app.use(
     "/swagger-ui",
