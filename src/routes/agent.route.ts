@@ -14,6 +14,7 @@ const agentRouter = Router();
 agentRouter.post(
     "/cover-letter",
     validateRequest(CoverLetter, "body"),
+    chatResourceLimit,
     coverLetterAgent,
 );
 agentRouter.post(
