@@ -44,6 +44,10 @@ export const chatResourceLimit = rateLimitPackage({
             limit = 1;
         }
 
+        if (origin === "https://uptime-monitoring.ksoftdev.site") {
+            limit = Infinity;
+        }
+
         return limit;
     },
     standardHeaders: true,
