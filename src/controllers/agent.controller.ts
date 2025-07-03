@@ -1,16 +1,13 @@
-import { Chat } from "@/validations/chat.validation";
+import { Chat, UptimeAgent } from "@/validations/chat.validation";
 import { SessionMessages } from "@/types";
-import { AgentsConfig, CoverLetterAgent } from "@/agents/portfolio.agents";
+import { CoverLetterAgent } from "@/agents/portfolio.agents";
 import { Request, Response } from "express";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
-import { createSupervisor } from "@langchain/langgraph-supervisor";
 
-import { ChatOpenAI } from "@langchain/openai";
-import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { tool } from "@langchain/core/tools";
-import { z } from "zod";
 import { NODE_ENV } from "@/config/env";
 import { CoverLetter } from "@/validations/cover-letter.validation";
+import { AgentsConfig } from "@/agents";
+import { WebsiteCheckerAgent } from "@/agents/uptime-monitoring.agents";
 
 /**
  * @swagger
@@ -58,7 +55,7 @@ export async function agent(
         messages.length,
     );
 
-    const selectedAgent = await AgentsConfig[agent].agent;
+    const selectedAgent = await AgentsConfig[agent].agent();
     // const selectedAgent = await PortfolioSupervisor
     const eventStream = await selectedAgent.streamEvents(
         { messages: prompts },
@@ -144,7 +141,7 @@ export async function coverLetterAgent(
         messages.length,
     );
 
-    const eventStream = await CoverLetterAgent.streamEvents(
+    const eventStream = (await CoverLetterAgent()).streamEvents(
         { messages: prompts },
         { version: "v2" },
     );
@@ -169,102 +166,26 @@ export async function coverLetterAgent(
     response.end();
 }
 
-export async function agentSupervisor(_req: Request, res: Response) {
-    // Tools
-    const bookHotel = tool(
-        async ({ hotel_name }: { hotel_name: string }) => {
-            return `✅ Hotel booked: ${hotel_name}`;
-        },
-        {
-            name: "book_hotel",
-            description: "Book a hotel",
-            schema: z.object({
-                hotel_name: z
-                    .string()
-                    .describe("The name of the hotel to book"),
-            }),
-        },
+export async function uptimeMonitoringAgent(
+    request: Request<unknown, unknown, UptimeAgent> & {
+        session: SessionMessages;
+    },
+    response: Response,
+) {
+    const { url } = request.body;
+
+    const messages = request.session.messages || [];
+
+    messages.push(new HumanMessage(url));
+
+    const prompts = messages.slice(
+        messages.length - (NODE_ENV === "production" ? 10 : 1),
+        messages.length,
     );
 
-    const bookFlight = tool(
-        async ({
-            from_airport,
-            to_airport,
-        }: {
-            from_airport: string;
-            to_airport: string;
-        }) => {
-            return `✈️ Flight booked from ${from_airport} to ${to_airport}`;
-        },
-        {
-            name: "book_flight",
-            description: "Book a flight",
-            schema: z.object({
-                from_airport: z.string().describe("The departure airport code"),
-                to_airport: z.string().describe("The arrival airport code"),
-            }),
-        },
-    );
+    const agent = await WebsiteCheckerAgent();
 
-    const baseLLM = new ChatOpenAI({
-        modelName: "gpt-4o",
-        temperature: 0,
-    });
+    const result = await agent.invoke({ messages: prompts });
 
-    const flightLLM = baseLLM.bindTools([bookFlight]);
-    const hotelLLM = baseLLM.bindTools([bookHotel]);
-
-    // Agents
-    const flightAssistant = createReactAgent({
-        llm: flightLLM,
-        tools: [bookFlight],
-        prompt: "You are a helpful assistant that handles all flight bookings.",
-        name: "flight_assistant",
-    });
-
-    const hotelAssistant = createReactAgent({
-        llm: hotelLLM,
-        tools: [bookHotel],
-        prompt: "You are a helpful assistant that handles all hotel bookings.",
-        name: "hotel_assistant",
-    });
-
-    // Supervisor — use base LLM, or bindTools([]) to silence warnings
-    const supervisorLLM = baseLLM.bindTools([]);
-
-    const supervisor = createSupervisor({
-        agents: [flightAssistant, hotelAssistant],
-        llm: supervisorLLM,
-        prompt: "You manage a hotel booking assistant and a flight booking assistant. Assign work to them one at a time.",
-    }).compile();
-
-    // Setup SSE
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const stream = await supervisor.stream({
-        messages: [
-            {
-                role: "user",
-                content:
-                    "first book a flight from BOS to JFK and then book a stay at McKittrick Hotel",
-            },
-        ],
-    });
-
-    console.log(stream);
-
-    // try {
-    //     for await (const chunk of stream) {
-    //         res.write(`data: ${JSON.stringify(chunk)}\n\n`);
-    //     }
-    // } catch (err) {
-    //     console.error("Error streaming:", err);
-    //     res.write(
-    //         `data: ${JSON.stringify({ error: "Streaming failed." })}\n\n`,
-    //     );
-    // } finally {
-    //     res.end();
-    // }
+    return response.json(result.structuredResponse);
 }
