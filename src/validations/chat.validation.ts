@@ -13,5 +13,10 @@ export const Agent = z
     })
     .required();
 
+export const UptimeAgent = z.object({
+    url: z.url(),
+});
+
+export type UptimeAgent = z.infer<typeof UptimeAgent>;
 export type Chat = z.infer<typeof Chat>;
 export type Agent = z.infer<typeof Agent>;

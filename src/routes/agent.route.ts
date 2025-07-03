@@ -3,9 +3,10 @@ import {
     agent,
     agents,
     coverLetterAgent,
+    uptimeMonitoringAgent,
 } from "@/controllers/agent.controller";
 import { validateRequest } from "@/middlewares/validation.middleware";
-import { Chat, Agent } from "@/validations/chat.validation";
+import { Chat, Agent, UptimeAgent } from "@/validations/chat.validation";
 import { chatResourceLimit } from "@/middlewares/rate-limiter.middleware";
 import { CoverLetter } from "@/validations/cover-letter.validation";
 
@@ -16,6 +17,12 @@ agentRouter.post(
     validateRequest(CoverLetter, "body"),
     chatResourceLimit,
     coverLetterAgent,
+);
+agentRouter.post(
+    "/uptime-monitoring",
+    validateRequest(UptimeAgent, "body"),
+    chatResourceLimit,
+    uptimeMonitoringAgent,
 );
 agentRouter.post(
     "/:agent",
