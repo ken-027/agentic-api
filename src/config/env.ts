@@ -35,6 +35,11 @@ export const PUSHOVER_USER = env.PUSHOVER_USER as string;
 export const PUSHOVER_TOKEN = env.PUSHOVER_TOKEN as string;
 export const HTTP_PROXY = env.HTTP_PROXY as string;
 
+export const EXCLUDE_FROM_RATELIMIT = (env.EXCLUDE_FROM_RATELIMIT?.replace(
+    /\s+/g,
+    "",
+)?.split(",") || []) as string[];
+
 export const ALLOWED_ORIGINS =
     NODE_ENV === "development"
         ? env.ALLOWED_ORIGINS_DEV?.replace(/\s+/g, "")?.split(",")

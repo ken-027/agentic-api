@@ -7,7 +7,10 @@ import {
 } from "@/controllers/agent.controller";
 import { validateRequest } from "@/middlewares/validation.middleware";
 import { Chat, Agent, UptimeAgent } from "@/validations/chat.validation";
-import { chatResourceLimit } from "@/middlewares/rate-limiter.middleware";
+import {
+    chatResourceLimit,
+    webAgentLimit,
+} from "@/middlewares/rate-limiter.middleware";
 import { CoverLetter } from "@/validations/cover-letter.validation";
 
 const agentRouter = Router();
@@ -21,7 +24,7 @@ agentRouter.post(
 agentRouter.post(
     "/uptime-monitoring",
     validateRequest(UptimeAgent, "body"),
-    chatResourceLimit,
+    webAgentLimit,
     uptimeMonitoringAgent,
 );
 agentRouter.post(
