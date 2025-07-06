@@ -10,7 +10,7 @@ export const getWebsiteContent = tool(
         const $ = cheerio.load(html);
         const text = $("body").text();
 
-        return `HTML: ${res.data}\nPlain Text: ${text.slice(0, 8000)}`;
+        return `HTML: ${res.data}\nPlain Text: ${text.slice(0, 8000)}\nResponse Headers: ${JSON.stringify(res.headers)}`;
     },
     {
         name: "fetch_html_content",

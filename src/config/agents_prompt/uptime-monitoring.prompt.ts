@@ -10,6 +10,7 @@ You are a site analyzer. Analyze the website HTML and respond in this JSON forma
     "security": string,
     "status": "DOWN" | "UP",
     "description": string(max 250 chars)
+    "responseTime": number  // in milliseconds
 }
 
 Questions to answer:
