@@ -11,10 +11,46 @@ import { WebsiteCheckerAgent } from "@/agents/uptime-monitoring.agents";
 
 /**
  * @swagger
- * /api/v1/agents/portfolio:
+ * /api/v1/agents:
+ *   get:
+ *     summary: Get list of agents
+ *     tags: [Agents]
+ *     responses:
+ *       200:
+ *         description: return list of agents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 agents:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                         example: portfolio
+ *                       description:
+ *                         type: string
+ *                         example: Handles portfolio inquires
+ *
+ */
+export function agents(_req: Request, response: Response) {
+    return response.json({
+        agents: Object.keys(AgentsConfig).map((name) => ({
+            name,
+            description: AgentsConfig[name].description,
+        })),
+    });
+}
+
+/**
+ * @swagger
+ * /api/v1/agents/github:
  *   post:
  *     summary: Post message and return as stream
- *     tags: [Chat]
+ *     tags: [Agents]
  *     requestBody:
  *       required: true
  *       content:
@@ -23,7 +59,32 @@ import { WebsiteCheckerAgent } from "@/agents/uptime-monitoring.agents";
  *             type: object
  *             required:
  *               - message
- *               - history
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: "What repository are you most proud of?"
+ *     responses:
+ *       200:
+ *         description: Return answered from the question
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ */
+/**
+ * @swagger
+ * /api/v1/agents/portfolio:
+ *   post:
+ *     summary: Post message and return as stream
+ *     tags: [Agents]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - message
  *             properties:
  *               message:
  *                 type: string
@@ -36,7 +97,6 @@ import { WebsiteCheckerAgent } from "@/agents/uptime-monitoring.agents";
  *             schema:
  *               type: string
  */
-
 export async function agent(
     request: Request<{ agent: "portfolio" }, unknown, Chat> & {
         session: SessionMessages;
@@ -80,42 +140,6 @@ export async function agent(
     messages.push(new AIMessage(aiResponse));
     request.session.messages = messages;
     response.end();
-}
-
-/**
- * @swagger
- * /api/v1/agents:
- *   get:
- *     summary: Get list of agents
- *     tags: [Chat]
- *     responses:
- *       200:
- *         description: return list of agents
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 agents:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                         example: portfolio
- *                       description:
- *                         type: string
- *                         example: Handles portfolio inquires
- *
- */
-export function agents(_req: Request, response: Response) {
-    return response.json({
-        agents: Object.keys(AgentsConfig).map((name) => ({
-            name,
-            description: AgentsConfig[name].description,
-        })),
-    });
 }
 
 export async function coverLetterAgent(
@@ -165,6 +189,65 @@ export async function coverLetterAgent(
     request.session.messages = messages;
     response.end();
 }
+
+/**
+ * @swagger
+ * /api/v1/agents/uptime-monitoring:
+ *   post:
+ *     summary: Post message and return as stream
+ *     tags: [Agents]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - url
+ *             properties:
+ *               url:
+ *                 type: url
+ *                 example: "https://portfolio.ksoftdev.site"
+ *     responses:
+ *       200:
+ *         description: Return answered from the question
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 siteType:
+ *                   type: string
+ *                   example: "Portfolio"
+ *                 techs:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Next.js", "TailwindCSS", "Vercel"]
+ *                 seoIssue:
+ *                   type: string
+ *                   example: "Missing meta description"
+ *                 brokenLink:
+ *                   type: string
+ *                   example: "1 broken link found"
+ *                 performance:
+ *                   type: string
+ *                   example: "Good"
+ *                 security:
+ *                   type: string
+ *                   example: "No issues detected"
+ *                 status:
+ *                   type: string
+ *                   enum: [DOWN, UP]
+ *                   example: "UP"
+ *                 description:
+ *                   type: string
+ *                   maxLength: 250
+ *                   example: "This is a personal portfolio site built with modern web technologies."
+ *                 responseTime:
+ *                   type: number
+ *                   example: 203.4
+ */
 
 export async function uptimeMonitoringAgent(
     request: Request<unknown, unknown, UptimeAgent> & {
