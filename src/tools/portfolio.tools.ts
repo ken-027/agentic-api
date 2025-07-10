@@ -13,7 +13,6 @@ import EmailJS from "@/utils/email-js";
 import PushoverNotificationUtil from "@/utils/pushover-notification.util";
 import { tool } from "@langchain/core/tools";
 import axios from "axios";
-// import axios from "axios";
 import { z } from "zod";
 
 export const skillsResource = tool(
@@ -72,10 +71,10 @@ export const contactResource = tool(
                 name: "LinkedIn",
                 link: "https://www.linkedin.com/in/kenneth-andales",
             },
-            {
-                name: "Upwork",
-                link: "https://www.upwork.com/freelancers/~0135c2e932c50f312f",
-            },
+            // {
+            //     name: "Upwork",
+            //     link: "https://www.upwork.com/freelancers/~0135c2e932c50f312f",
+            // },
             {
                 name: "Gmail",
                 link: "mailto:keanolida7296@gmail.com",
@@ -84,10 +83,10 @@ export const contactResource = tool(
                 name: "Teams",
                 link: "https://teams.microsoft.com/l/chat/0/0?users=keanolida7296@gmail.com",
             },
-            {
-                name: "Portfolio Site",
-                link: "https://portfolio.ksoftdev.site",
-            },
+            // {
+            //     name: "Portfolio Site",
+            //     link: "https://portfolio.ksoftdev.site",
+            // },
         ];
 
         return `
@@ -98,7 +97,7 @@ export const contactResource = tool(
     {
         name: "contacts",
         schema: {},
-        description: "Returns Kenneth's primary contact information like Gmail, Upwork, LinkedIn, Teams, and Portfolio Site",
+        description: "Returns Kenneth's primary contact information like Gmail, LinkedIn and Teams",
     },
 );
 
@@ -237,7 +236,6 @@ export const experienceResource = tool(
 
 export const pushOverNotification = tool(
     ({ inquiry }) => {
-        console.log({ inquiry });
         if (NODE_ENV !== "production") return;
 
         const pushover = new PushoverNotificationUtil();

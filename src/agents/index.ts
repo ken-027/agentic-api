@@ -1,5 +1,6 @@
 import { Agent } from "openai/_shims";
 import { PortfolioSupervisor } from "./portfolio.agents";
+import { GithubAgent } from "./github.agent";
 
 export const AgentsConfig: Record<
     Agent,
@@ -10,5 +11,10 @@ export const AgentsConfig: Record<
         agent: PortfolioSupervisor,
         name: "Portfolio Assistant",
         description: "Handles portfolio inquires",
+    },
+    github: {
+        agent: GithubAgent,
+        name: "Github Assistant",
+        description: "Handles github account of Kenneth Andales",
     },
 } as const;

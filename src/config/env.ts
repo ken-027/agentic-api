@@ -46,3 +46,5 @@ export const ALLOWED_ORIGINS =
         : env.ALLOWED_ORIGINS?.replace(/\s+/g, "")?.split(",");
 
 export const SESSION_SECRET = env.SESSION_SECRET as string;
+
+export const GITHUB_API_TOKEN = env.GITHUB_API_TOKEN as string;

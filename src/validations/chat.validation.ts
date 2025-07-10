@@ -9,7 +9,7 @@ export const Chat = z
 
 export const Agent = z
     .object({
-        agent: z.enum([AgentEnum.Portfolio]),
+        agent: z.enum([AgentEnum.Portfolio, AgentEnum.Github]),
     })
     .required();
 
